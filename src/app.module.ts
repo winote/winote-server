@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Config } from './config/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
-  imports: [AuthModule, UserModule],
+  imports: [
+    TypeOrmModule.forRootAsync({ useFactory: () => Config.typeorm }),
+    AuthModule,
+    UserModule],
   controllers: [],
   providers: [],
 })

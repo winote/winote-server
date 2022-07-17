@@ -80,6 +80,11 @@ export const Config: IConfig = {
         cli: {
             migrationsDir: 'src/migrations'
         },
+        extra: {
+            ssl: {
+                rejectUnauthorized: false,
+              },
+       }
        
     },
     helmet: {

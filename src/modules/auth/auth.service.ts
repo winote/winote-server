@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthDTO, AuthInputDTO } from './interfaces/auth.interface';
 // import { User } from '../user/user.entity';
 // import { UserService } from '../user/user.service';
@@ -39,7 +39,7 @@ export class AuthService {
                     const userCredential: any = await FirebaseAuthClient.signInWithEmailAndPassword(auth, access.email, access.password);
                     resolve(userCredential?.user?.accessToken);
                 } catch (e) {
-                    reject(e);
+                    throw new HttpException("Wrong credentials", HttpStatus.UNAUTHORIZED);
                 }
             });
             authPromise.then().catch((e) => reject(e));

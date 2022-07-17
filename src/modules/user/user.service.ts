@@ -1,10 +1,12 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { Service } from '../../shared/decorators/service';
 import { User } from './user.entity';
 import { UserRepository} from './user.repository';
 import { FirebaseProvider } from '../../shared/provider/firebase.provider';
 import { Auth } from 'firebase-admin/lib/auth';
 import { v4 as uuid } from 'uuid';
+import { CreateUserDto } from './dto/createUser.dto';
+import { plainToClass } from 'class-transformer';
 
 // import UserRecord = Auth.UserRecord;
 // import CreateRequest = Auth.CreateRequest;
@@ -27,50 +29,22 @@ export class UserService{
         return user;
     }
 
-    async findByToken(token: string): Promise<User> {
-        return await this.userRepository.findOne({
-            where: [{ token: token }],
-            join: {
-                alias: 'user',
-                innerJoinAndSelect: {
-                    client: 'user.client',
-                },
-            },
-        });
-    }
-
     public async findUserByGuid(guid:string): Promise<User>{
         return await this.userRepository.findOne({
             where: [{guid: guid}],
-            join: {
-                alias: 'user',
-                innerJoinAndSelect: {
-                    client: 'user.client',
-                },
-            },
         })
-    }
-
-    public async getUserCompanies(guid:string):Promise<User> {
-        return await this.userRepository.findOne({
-            where: [{ guid: guid }],
-            join: {
-                alias: 'user',
-                innerJoinAndSelect: {
-                    company: 'user.company',
-                },
-            },
-        });
     }
 
     async create(entity: User): Promise<User> {
         try {
-
+            entity = await this.beforeCreate(entity);
             entity.guid = uuid();
-            return await this.userRepository.create(entity);
+            entity.createdAt = new Date();
+            const user = await this.userRepository.create(entity);
+            return this.userRepository.save(user);
         } catch (e) {
             await this.deleteFirebaseUser(entity);
-            throw e;
+            throw new HttpException("User not created", HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
@@ -133,6 +107,7 @@ export class UserService{
         const request = {
             email: entity.email,
             displayName: entity.name,
+            password: entity.password,
             emailVerified: false,
             disabled: false,
         };

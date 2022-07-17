@@ -12,12 +12,6 @@ export abstract class BaseEntity {
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column({ name: 'update_user_id', nullable: true })
-    updatedByUserId?: number;
-
-    @Column({ name: 'create_user_id', nullable: true })
-    createdByUserId?: number;
-
     @CreateDateColumn({ name: 'created_at' })
     createdAt?: Date;
 
