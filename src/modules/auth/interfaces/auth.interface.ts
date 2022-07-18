@@ -5,6 +5,7 @@ export interface AuthDTO {
     readonly name: string;
     readonly email: string;
     readonly token: string;
+    readonly avatar: string;
 }
 
 export class AuthInputDTO {

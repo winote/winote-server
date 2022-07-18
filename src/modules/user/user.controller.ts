@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from './dto/createUser.dto';
+import { FirebaseAuthGuard } from '../auth/guards/firebase.guard';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
@@ -24,6 +24,7 @@ export class UserController {
         return this.userService.create(user);
     }
 
+    @UseGuards(FirebaseAuthGuard)
     @Get('/:email')
     async getUserByEmail(@Param('email') email:string){
         return this.userService.findByEmail(email);

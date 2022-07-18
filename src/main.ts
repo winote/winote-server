@@ -11,7 +11,7 @@ import { INestApplication, Logger } from '@nestjs/common';
 
 
 async function bootstrap() {
-
+    const LOGGER: Logger = new Logger('MAIN');
     const app: INestApplication = await NestFactory.create(AppModule);
 
     app.use(helmet(Config.helmet));
@@ -40,8 +40,7 @@ async function bootstrap() {
 
     NestApplicationContextProvider.getInstance().setApplicationContext(app);
     await app.listen(Config.httpPort || 3000);
-    Logger.log(`App runing on port ${Config.httpPort}`)
+    LOGGER.log(`App runing on port ${Config.httpPort}`);
 }
-
 
 bootstrap();
