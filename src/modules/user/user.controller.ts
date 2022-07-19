@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FirebaseAuthGuard } from '../auth/guards/firebase.guard';
+import { UpdateUserDto } from './dto/updateUser.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
@@ -12,13 +13,7 @@ export class UserController {
         private readonly userService:UserService
     ){ }
 
-    @ApiOperation({
-        description: 'Creates a new user for the app'
-    })
-    @ApiBody({
-        description: 'User',
-        type: User,
-    })
+    @ApiOperation({description: 'Creates a new user for the app'})
     @Post()
     async createUser(@Body() user:User){
         return this.userService.create(user);
@@ -28,5 +23,11 @@ export class UserController {
     @Get('/:email')
     async getUserByEmail(@Param('email') email:string){
         return this.userService.findByEmail(email);
+    }
+
+    @UseGuards(FirebaseAuthGuard)
+    @Patch()
+    async updateUser(@Body() user:UpdateUserDto){
+        return this.userService.update(user)
     }
 }

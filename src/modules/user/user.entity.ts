@@ -29,7 +29,7 @@ export class User extends BaseEntity {
     @Column({ name: 'email', length: 255, nullable: false })
     email: string;
     
-    @ApiProperty()
+    @ApiProperty({description: "Base64 image"})
     @IsNotEmpty()
     password:string
 

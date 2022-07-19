@@ -1,37 +1,38 @@
-import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Logger, PreconditionFailedException } from '@nestjs/common';
 import { Service } from '../../shared/decorators/service';
 import { User } from './user.entity';
-import { UserRepository} from './user.repository';
+import { UserRepository } from './user.repository';
 import { FirebaseProvider } from '../../shared/provider/firebase.provider';
 import { Auth } from 'firebase-admin/lib/auth';
 import { v4 as uuid } from 'uuid';
-import { CreateUserDto } from './dto/createUser.dto';
-import { plainToClass } from 'class-transformer';
+import { UpdateUserDto } from './dto/updateUser.dto';
+import { StorageService } from '../storage/storage.service';
 
 // import UserRecord = Auth.UserRecord;
 // import CreateRequest = Auth.CreateRequest;
 
 @Service()
 @Injectable()
-export class UserService{
+export class UserService {
 
     private readonly LOGGER: Logger = new Logger(UserService.name);
 
     constructor(
         @Inject('UserRepository')
         private readonly userRepository: UserRepository,
-    ) {   }
+        private readonly storageService: StorageService,
+    ) { }
 
     async findByEmail(email: string): Promise<User> {
-        const user =  await this.userRepository.findOne({
+        const user = await this.userRepository.findOne({
             where: [{ email }]
         });
         return user;
     }
 
-    public async findUserByGuid(guid:string): Promise<User>{
+    public async findUserByGuid(guid: string): Promise<User> {
         return await this.userRepository.findOne({
-            where: [{guid: guid}],
+            where: [{ guid: guid }],
         })
     }
 
@@ -48,15 +49,38 @@ export class UserService{
         }
     }
 
+
     protected async beforeCreate(entity: User): Promise<User> {
         await this.createFirebaseUser(entity);
         return entity;
     }
 
-    protected async beforeUpdate(entity: User): Promise<User> {
-        
-        await this.updateFirebaseUser(entity,false);
-        return entity;
+    async update(entity: UpdateUserDto) {
+        const user: User = await this.findByEmail(entity.email);
+        if (user) {
+            entity.id = user.id;
+            entity = await this.beforeUpdate(entity);
+            return this.userRepository.update(entity.id, entity);
+        } else {
+            throw new PreconditionFailedException('user not found')
+        }
+    }
+
+    protected async beforeUpdate(user: UpdateUserDto): Promise<UpdateUserDto> {
+
+        if (user.avatar) {
+            user = await this.saveProfilePic(user)
+        }
+        return user;
+    }
+
+    protected async saveProfilePic(user: UpdateUserDto) {
+        console.log(user.id);
+        const filePath = `${user.id}/profile/profile.png`;
+        const firebasePath = await this.storageService.uploadFileForUser(filePath, 'image/png', user.avatar);
+        user.avatar = firebasePath;
+        this.LOGGER.log("FirebasePath", firebasePath);
+        return user;
     }
 
     protected async afterDelete(entity: User): Promise<User> {

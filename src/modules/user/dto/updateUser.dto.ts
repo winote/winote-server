@@ -3,7 +3,10 @@ import { Expose } from "class-transformer";
 import { IsNotEmpty, Validate } from "class-validator";
 import { EmailUserUniqueValidator } from "../validation/email-unique.validation";
 
-export class CreateUserDto{
+export class UpdateUserDto{
+
+    id:number;
+    
     @Expose()
     @ApiProperty()
     @IsNotEmpty()
@@ -16,13 +19,8 @@ export class CreateUserDto{
 
     @Expose()
     @ApiProperty()
-    @Validate(EmailUserUniqueValidator)
     @IsNotEmpty()
     email: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    password:string;
 
     @Expose()
     @ApiPropertyOptional()

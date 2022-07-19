@@ -44,6 +44,7 @@ try {
             firebaseAdminOptions = {
                 credential: FirebaseAdmin.credential.cert(credentialData),
                 databaseURL: process.env.FIREBASE_ADMIN_DATABASE_URL,
+                storageBucket: `${process.env.BUCKET_NAME}`
             };
         }
     }
