@@ -60,7 +60,14 @@ export class UserService {
         if (user) {
             entity.id = user.id;
             entity = await this.beforeUpdate(entity);
-            return this.userRepository.update(entity.id, entity);
+            return await this.userRepository.update(entity.id, entity)
+            .then(user=>{
+                return entity;
+            })
+            .catch(err=>{
+                this.LOGGER.error(err);
+                throw new HttpException('unable to save user', HttpStatus.INTERNAL_SERVER_ERROR)
+            });
         } else {
             throw new PreconditionFailedException('user not found')
         }
@@ -75,11 +82,10 @@ export class UserService {
     }
 
     protected async saveProfilePic(user: UpdateUserDto) {
-        console.log(user.id);
-        const filePath = `${user.id}/profile/profile.png`;
+        
+        const filePath = `${user.id}/profile/profile.jpeg`;
         const firebasePath = await this.storageService.uploadFileForUser(filePath, 'image/png', user.avatar);
         user.avatar = firebasePath;
-        this.LOGGER.log("FirebasePath", firebasePath);
         return user;
     }
 

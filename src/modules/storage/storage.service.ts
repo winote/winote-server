@@ -15,12 +15,15 @@ export class StorageService {
     async uploadFileForUser(filePath: string, contentType: string, fileBase64: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
-                const imageBuffer = new Buffer(fileBase64, 'base64');
+                const normalizedImg =fileBase64.replace(/^data:image\/jpeg;base64,/,"")
+                const imageBuffer = Buffer.from(normalizedImg, 'base64');
 
                 let bucket = firebaseAdmin.storage(firebaseAdmin.app()).bucket();
                 let file = bucket.file(filePath);
                 file.save(imageBuffer,{
-                    metadata: CONSTANTS.STORAGE_IMAGE_MIMETYPE_PNG
+                    metadata:{
+                        contentType:'image/jpeg'//CONSTANTS.STORAGE_IMAGE_MIMETYPE_PNG
+                    } 
                 })
                 resolve(file.getSignedUrl({
                     action: 'read',
