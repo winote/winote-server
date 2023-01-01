@@ -1,11 +1,9 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class createDatabase1658060904173 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
-
-        //TABLE COUNTRY
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    //TABLE COUNTRY
+    await queryRunner.query(`
         CREATE TABLE IF NOT EXISTS country (
             id serial primary key not null,
             countrycode char(3) NOT NULL,
@@ -13,7 +11,7 @@ export class createDatabase1658060904173 implements MigrationInterface {
             code char(2) DEFAULT NULL
           );
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
         INSERT INTO country (countrycode, countryname, code)
         VALUES ('AFG','Afghanistan','AF'),
             ('ALA','Åland','AX'),
@@ -267,8 +265,8 @@ export class createDatabase1658060904173 implements MigrationInterface {
             ('ZWE','Zimbabwe','ZW');
         `);
 
-        // TABLE USERS
-        await queryRunner.query(`CREATE TABLE users (
+    // TABLE USERS
+    await queryRunner.query(`CREATE TABLE users (
             id serial primary key not null,
             name varchar(255) not null,
             nickname varchar(255) not null,
@@ -282,8 +280,8 @@ export class createDatabase1658060904173 implements MigrationInterface {
             updated_at timestamp without time zone
     );`);
 
-        //TABLE WINE
-        await queryRunner.query(`CREATE TABLE wines (
+    //TABLE WINE
+    await queryRunner.query(`CREATE TABLE wines (
             id serial primary key not null,
             guid varchar(36),
             barcode varchar,
@@ -298,7 +296,7 @@ export class createDatabase1658060904173 implements MigrationInterface {
             updated_at timestamp without time zone
         );`);
 
-        await queryRunner.query(`CREATE TABLE ocasions (
+    await queryRunner.query(`CREATE TABLE ocasions (
             id serial primary key not null,
             guid varchar(36),
             title varchar,
@@ -307,8 +305,8 @@ export class createDatabase1658060904173 implements MigrationInterface {
             updated_at timestamp without time zone
         );`);
 
-        //TABLE NOTES
-        await queryRunner.query(`CREATE TABLE user_notes (
+    //TABLE NOTES
+    await queryRunner.query(`CREATE TABLE user_notes (
             id serial primary key not null,
             guid varchar(36),
             user_id bigint references users (id),
@@ -322,7 +320,7 @@ export class createDatabase1658060904173 implements MigrationInterface {
             updated_at timestamp without time zone
         );`);
 
-        await queryRunner.query(`CREATE TABLE user_ocasion (
+    await queryRunner.query(`CREATE TABLE user_ocasion (
             id serial primary key not null,
             user_id bigint references users (id),
             ocasion_id bigint references ocasions (id),
@@ -330,16 +328,14 @@ export class createDatabase1658060904173 implements MigrationInterface {
             updated_at timestamp without time zone
         );`);
 
-        await queryRunner.query(`CREATE TABLE wine_ocasion (
+    await queryRunner.query(`CREATE TABLE wine_ocasion (
             id serial primary key not null,
             wine_id bigint references wines (id),
             ocasion_id bigint references ocasions (id),
             created_at timestamp without time zone not null,
             updated_at timestamp without time zone
         );`);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-    }
-
+  public async down(queryRunner: QueryRunner): Promise<void> {}
 }

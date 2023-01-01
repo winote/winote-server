@@ -1,5 +1,5 @@
-export const CONSTANTS =  {
-    STORAGE_URL_EXPIRES:'03-09-2491',
-    STORAGE_URL_ACTION_READ: 'read',
-    STORAGE_IMAGE_MIMETYPE_PNG: 'image/png',
-}
+export const CONSTANTS = {
+  STORAGE_URL_EXPIRES: '03-09-2491',
+  STORAGE_URL_ACTION_READ: 'read',
+  STORAGE_IMAGE_MIMETYPE_PNG: 'image/png',
+};

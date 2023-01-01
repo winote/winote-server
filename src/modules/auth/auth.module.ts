@@ -7,17 +7,9 @@ import { AuthService } from './auth.service';
 import { FirebaseStrategy } from './passport/firebase.strategy';
 
 @Module({
-    imports: [
-        forwardRef(() => UserModule),
-    ],
-    controllers: [AuthController],
-    providers: [
-        FirebaseStrategy,
-        AuthService,
-    ],
-    exports: [
-        AuthService,
-    ],
+  imports: [forwardRef(() => UserModule)],
+  controllers: [AuthController],
+  providers: [FirebaseStrategy, AuthService],
+  exports: [AuthService],
 })
-export class AuthModule {
-}
+export class AuthModule {}

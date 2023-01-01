@@ -10,7 +10,8 @@ import { StorageModule } from './modules/storage/storage.module';
     TypeOrmModule.forRootAsync({ useFactory: () => Config.typeorm }),
     AuthModule,
     UserModule,
-    StorageModule],
+    StorageModule,
+  ],
   controllers: [],
   providers: [],
 })
